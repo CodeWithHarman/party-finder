@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -107,11 +108,12 @@ const inputBase = {
   boxSizing: 'border-box',
 };
 
-const StyledInput = ({ error, style, ...props }) => {
+const StyledInput = React.forwardRef(({ error, style, ...props }, ref) => {
   const [focused, setFocused] = useState(false);
   return (
     <input
       {...props}
+      ref={ref}
       onFocus={(e) => { setFocused(true); props.onFocus?.(e); }}
       onBlur={(e)  => { setFocused(false); props.onBlur?.(e); }}
       style={{
@@ -122,13 +124,14 @@ const StyledInput = ({ error, style, ...props }) => {
       }}
     />
   );
-};
+});
 
-const StyledTextArea = ({ error, ...props }) => {
+const StyledTextArea = React.forwardRef(({ error, ...props }, ref) => {
   const [focused, setFocused] = useState(false);
   return (
     <textarea
       {...props}
+      ref={ref}
       onFocus={(e) => { setFocused(true); props.onFocus?.(e); }}
       onBlur={(e)  => { setFocused(false); props.onBlur?.(e); }}
       style={{
@@ -141,7 +144,9 @@ const StyledTextArea = ({ error, ...props }) => {
       }}
     />
   );
-};
+});
+
+StyledTextArea.displayName = 'StyledTextArea';
 
 // Number Stepper
 const NumberStepper = ({ value, onChange, min, max }) => {

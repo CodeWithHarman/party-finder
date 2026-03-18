@@ -72,7 +72,7 @@ export const FindParty = () => {
                 Find a Party
               </h2>
               <button
-                onClick={refresh}
+                onClick={refetch}
                 title="Refresh"
                 style={{
                   width: '32px',

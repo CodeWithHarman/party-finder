@@ -39,7 +39,7 @@ export const PartyMap = ({
   currentUserUid,
 }) => {
   const defaultCenter = userCoords
-    ? [userCoords.lat, userCoords.lng]
+    ? [userCoords.latitude, userCoords.longitude]
     : [43.6532, -79.3832]; // Toronto fallback
 
   return (
@@ -59,13 +59,13 @@ export const PartyMap = ({
 
       {/* Fly to user location when it loads */}
       {userCoords && (
-        <FlyToLocation center={[userCoords.lat, userCoords.lng]} zoom={14} />
+        <FlyToLocation center={[userCoords.latitude, userCoords.longitude]} zoom={14} />
       )}
 
       {/* Fly to selected party */}
       {selectedParty && (
         <FlyToLocation
-          center={[selectedParty.latitude, selectedParty.longitude]}
+          center={[selectedParty.lat, selectedParty.lng]}
           zoom={15}
         />
       )}
@@ -95,14 +95,16 @@ export const PartyMap = ({
       )}
 
       {/* Party markers */}
-      {parties.map((party) => {
+      {parties
+        .filter(party => party.lat !== undefined && party.lng !== undefined)
+        .map((party) => {
         const isHost = party.hostUid === currentUserUid;
         const isSelected = selectedParty?.id === party.id;
 
         return (
           <Marker
             key={party.id}
-            position={[party.latitude, party.longitude]}
+            position={[party.lat, party.lng]}
             icon={createPartyIcon(isHost, isSelected)}
             eventHandlers={{
               click: () => onPartyClick(party),

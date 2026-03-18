@@ -22,6 +22,11 @@ const PARTIES_COLLECTION = 'parties';
  * @param {object} user - the authenticated Firebase user
  */
 export const postParty = async (partyData, user) => {
+  // Validate coordinates
+  if (!partyData.lat || !partyData.lng || isNaN(partyData.lat) || isNaN(partyData.lng)) {
+    throw new Error('Invalid coordinates: please geocode the address first');
+  }
+
   const docRef = await addDoc(collection(db, PARTIES_COLLECTION), {
     hostUid: user.uid,
     hostName: user.displayName,
@@ -32,7 +37,7 @@ export const postParty = async (partyData, user) => {
     currentRSVPs: 0,
     parking: partyData.parking,
     byob: partyData.byob,
-    location: new GeoPoint(partyData.lat, partyData.lng),
+    location: new GeoPoint(Number(partyData.lat), Number(partyData.lng)),
     date: partyData.date,
     active: true,
     createdAt: serverTimestamp(),
@@ -47,17 +52,20 @@ export const postParty = async (partyData, user) => {
 export const fetchActiveParties = async () => {
   const q = query(
     collection(db, PARTIES_COLLECTION),
-    where('active', '==', true),
-    orderBy('createdAt', 'desc')
+    where('active', '==', true)
   );
   const snapshot = await getDocs(q);
-  return snapshot.docs.map((d) => ({
-    id: d.id,
-    ...d.data(),
-    // Normalise GeoPoint to plain object for easy use
-    lat: d.data().location.latitude,
-    lng: d.data().location.longitude,
-  }));
+  return snapshot.docs.map((d) => {
+    const data = d.data();
+    const location = data.location || {};
+    return {
+      id: d.id,
+      ...data,
+      // Extract lat/lng from GeoPoint safely
+      lat: location.latitude !== undefined ? location.latitude : location._lat,
+      lng: location.longitude !== undefined ? location.longitude : location._lng,
+    };
+  });
 };
 
 /**
@@ -66,16 +74,19 @@ export const fetchActiveParties = async () => {
 export const fetchUserParties = async (uid) => {
   const q = query(
     collection(db, PARTIES_COLLECTION),
-    where('hostUid', '==', uid),
-    orderBy('createdAt', 'desc')
+    where('hostUid', '==', uid)
   );
   const snapshot = await getDocs(q);
-  return snapshot.docs.map((d) => ({
-    id: d.id,
-    ...d.data(),
-    lat: d.data().location.latitude,
-    lng: d.data().location.longitude,
-  }));
+  return snapshot.docs.map((d) => {
+    const data = d.data();
+    const location = data.location || {};
+    return {
+      id: d.id,
+      ...data,
+      lat: location.latitude !== undefined ? location.latitude : location._lat,
+      lng: location.longitude !== undefined ? location.longitude : location._lng,
+    };
+  });
 };
 
 /**
