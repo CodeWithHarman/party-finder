@@ -128,35 +128,7 @@ export const AddressSearch = ({ value, onChange, onGeocode, error }) => {
         </p>
       )}
 
-      {/* Mini map preview */}
-      {resolvedCoords && (
-        <div style={{
-          marginTop: '12px',
-          height: '180px',
-          borderRadius: 'var(--radius-md)',
-          overflow: 'hidden',
-          border: '1px solid var(--border)',
-          animation: 'fadeIn 0.3s ease',
-        }}>
-          <style>{`@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }`}</style>
-          <MapContainer
-            center={[resolvedCoords.lat, resolvedCoords.lng]}
-            zoom={15}
-            style={{ width: '100%', height: '100%' }}
-            zoomControl={false}
-            scrollWheelZoom={false}
-            dragging={false}
-            attributionControl={false}
-          >
-            <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
-            <Recenter lat={resolvedCoords.lat} lng={resolvedCoords.lng} />
-            <Marker
-              position={[resolvedCoords.lat, resolvedCoords.lng]}
-              icon={createPartyIcon(false, true)}
-            />
-          </MapContainer>
-        </div>
-      )}
+    
     </div>
   );
 };

@@ -13,6 +13,7 @@ export const useParties = () => {
       setParties([
         {
           id: 1,
+          hostUid: 'user123',
           title: 'Campus House Party',
           description: 'Join us for an epic night!',
           latitude: 40.7128,

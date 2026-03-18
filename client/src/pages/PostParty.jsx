@@ -127,20 +127,7 @@ export const PostParty = () => {
             />
           ) : (
             <>
-              {/* Header */}
-              <h1
-                style={{
-                  fontSize: '32px',
-                  fontWeight: '800',
-                  marginBottom: '12px',
-                }}
-              >
-                🎉 Post a Party
-              </h1>
-
-              <p style={{ marginBottom: '24px', color: '#666' }}>
-                Fill in the details and your party will go live on the map.
-              </p>
+            
 
               {/* Form */}
               <div

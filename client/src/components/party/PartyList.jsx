@@ -1,10 +1,9 @@
 import { formatPartyDate } from '../../utils/formatters';
-import { formatDistance } from '../../utils/geoUtils';
-import { haversineDistance } from '../../utils/geoUtils';
+import { haversineDistance, formatDistance } from '../../utils/geoUtils';
 
 const PartyListItem = ({ party, isSelected, onClick, userCoords }) => {
   const dist = userCoords
-    ? haversineDistance(userCoords.lat, userCoords.lng, party.lat, party.lng)
+    ? haversineDistance(userCoords.latitude, userCoords.longitude, party.latitude, party.longitude)
     : null;
 
   const spotsLeft = party.maxPeople - (party.currentRSVPs || 0);

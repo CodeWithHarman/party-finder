@@ -12,9 +12,9 @@ import { useAuth } from '../hooks/useAuth';
 export const FindParty = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { coords: userCoords, loading: geoLoading, error: geoError } = useGeolocation();
+  const { location: userCoords, loading: geoLoading, error: geoError } = useGeolocation();
   const [radiusKm, setRadiusKm] = useState(5);
-  const { parties, loading: partiesLoading, refresh } = useParties(userCoords, radiusKm);
+  const { parties, loading: partiesLoading, refetch } = useParties();
 
   const [selectedParty, setSelectedParty] = useState(null);
   const [sidebarTab, setSidebarTab] = useState('list'); // 'list' or 'detail'

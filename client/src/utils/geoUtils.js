@@ -10,3 +10,13 @@ export const haversineDistance = (lat1, lon1, lat2, lon2) => {
   const distance = R * c;
   return distance;
 };
+
+export const formatDistance = (distanceMiles) => {
+  if (distanceMiles < 1) {
+    return `${Math.round(distanceMiles * 5280)} ft`; // convert miles to feet
+  } else if (distanceMiles < 10) {
+    return `${distanceMiles.toFixed(1)} mi`;
+  } else {
+    return `${Math.round(distanceMiles)} mi`;
+  }
+};

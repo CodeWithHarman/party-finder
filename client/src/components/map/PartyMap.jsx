@@ -65,7 +65,7 @@ export const PartyMap = ({
       {/* Fly to selected party */}
       {selectedParty && (
         <FlyToLocation
-          center={[selectedParty.lat, selectedParty.lng]}
+          center={[selectedParty.latitude, selectedParty.longitude]}
           zoom={15}
         />
       )}
@@ -73,7 +73,7 @@ export const PartyMap = ({
       {/* User location dot */}
       {userCoords && (
         <Marker
-          position={[userCoords.lat, userCoords.lng]}
+          position={[userCoords.latitude, userCoords.longitude]}
           icon={createUserIcon()}
           zIndexOffset={1000}
         />
@@ -82,7 +82,7 @@ export const PartyMap = ({
       {/* Radius circle */}
       {userCoords && (
         <Circle
-          center={[userCoords.lat, userCoords.lng]}
+          center={[userCoords.latitude, userCoords.longitude]}
           radius={radiusKm * 1000}
           pathOptions={{
             color: 'rgba(0, 229, 200, 0.6)',
@@ -102,7 +102,7 @@ export const PartyMap = ({
         return (
           <Marker
             key={party.id}
-            position={[party.lat, party.lng]}
+            position={[party.latitude, party.longitude]}
             icon={createPartyIcon(isHost, isSelected)}
             eventHandlers={{
               click: () => onPartyClick(party),
