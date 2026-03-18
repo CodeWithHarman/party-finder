@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { rsvpToParty } from '../../firebase/firestore';
+import { rsvpToParty, deactivateParty } from '../../firebase/firestore';
 import { formatPartyDate, timeAgo } from '../../utils/formatters';
 import { formatDistance } from '../../utils/geoUtils';
 
@@ -28,10 +28,12 @@ const Tag = ({ children, color = 'accent' }) => {
 /**
  * PartyCard - shown in the right sidebar when a party marker is clicked.
  */
-export const PartyCard = ({ party, onClose, distanceKm, currentUserUid }) => {
+export const PartyCard = ({ party, onClose, distanceKm, currentUserUid, onPartyDeleted }) => {
   const [rsvpDone, setRsvpDone] = useState(false);
   const [rsvpLoading, setRsvpLoading] = useState(false);
   const [rsvpCount, setRsvpCount] = useState(party.currentRSVPs || 0);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const isHost = party.hostUid === currentUserUid;
   const spotsLeft = party.maxPeople - rsvpCount;
@@ -48,6 +50,24 @@ export const PartyCard = ({ party, onClose, distanceKm, currentUserUid }) => {
       console.error(err);
     } finally {
       setRsvpLoading(false);
+    }
+  };
+
+  const handleDeleteParty = async () => {
+    setDeleteLoading(true);
+    try {
+      await deactivateParty(party.id);
+      // Notify parent to refresh and close
+      if (onPartyDeleted) {
+        onPartyDeleted(party.id);
+      }
+      onClose();
+    } catch (err) {
+      console.error('Failed to delete party:', err);
+      alert('Failed to delete party');
+    } finally {
+      setDeleteLoading(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -220,6 +240,84 @@ export const PartyCard = ({ party, onClose, distanceKm, currentUserUid }) => {
           >
             {rsvpLoading ? 'RSVPing…' : rsvpDone ? '✓ You\'re going!' : isFull ? 'Party is full' : "I'm going 🎉"}
           </button>
+        )}
+
+        {/* Host Delete Section */}
+        {isHost && (
+          <>
+            {!showDeleteConfirm ? (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                style={{
+                  width: '100%', padding: '12px',
+                  background: 'var(--bg-raised)', border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-md)',
+                  color: 'var(--accent)',
+                  fontFamily: 'var(--font-body)',
+                  fontWeight: '600', fontSize: '14px',
+                  cursor: 'pointer',
+                  transition: 'all var(--transition)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255,61,107,0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'var(--bg-raised)';
+                }}
+              >
+                🗑️ Delete Party
+              </button>
+            ) : (
+              <div style={{
+                padding: '12px',
+                background: 'var(--accent-dim)',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid rgba(255,61,107,0.2)',
+              }}>
+                <p style={{
+                  margin: '0 0 12px',
+                  fontSize: '13px',
+                  color: 'var(--text-primary)',
+                  fontWeight: '500',
+                }}>Delete this party?</p>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    onClick={handleDeleteParty}
+                    disabled={deleteLoading}
+                    style={{
+                      flex: 1, padding: '10px',
+                      background: 'var(--accent)',
+                      border: 'none',
+                      borderRadius: 'var(--radius-md)',
+                      color: 'white',
+                      fontWeight: '600', fontSize: '13px',
+                      cursor: deleteLoading ? 'not-allowed' : 'pointer',
+                      opacity: deleteLoading ? 0.6 : 1,
+                      transition: 'all var(--transition)',
+                    }}
+                  >
+                    {deleteLoading ? 'Deleting…' : 'Yes, delete'}
+                  </button>
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    disabled={deleteLoading}
+                    style={{
+                      flex: 1, padding: '10px',
+                      background: 'var(--bg-raised)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-md)',
+                      color: 'var(--text-primary)',
+                      fontWeight: '600', fontSize: '13px',
+                      cursor: deleteLoading ? 'not-allowed' : 'pointer',
+                      opacity: deleteLoading ? 0.6 : 1,
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

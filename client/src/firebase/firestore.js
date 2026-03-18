@@ -11,6 +11,7 @@ import {
   serverTimestamp,
   GeoPoint,
   getDoc,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from './config';
 
@@ -113,4 +114,34 @@ export const deactivateParty = async (partyId) => {
  */
 export const deleteParty = async (partyId) => {
   await deleteDoc(doc(db, PARTIES_COLLECTION, partyId));
+};
+
+/**
+ * Auto-deactivate parties whose date has passed.
+ * Call this periodically or after fetching parties.
+ */
+export const autoDeactivateExpiredParties = async () => {
+  try {
+    const now = new Date();
+    const expiredPartiesRef = await getDocs(
+      query(
+        collection(db, PARTIES_COLLECTION),
+        where('active', '==', true),
+        where('date', '<', now)
+      )
+    );
+
+    // Batch update expired parties to inactive
+    const batch = writeBatch(db);
+    expiredPartiesRef.docs.forEach((partyDoc) => {
+      batch.update(partyDoc.ref, { active: false });
+    });
+
+    if (expiredPartiesRef.docs.length > 0) {
+      await batch.commit();
+      console.log(`✓ Auto-deactivated ${expiredPartiesRef.docs.length} expired parties`);
+    }
+  } catch (err) {
+    console.error('Error auto-deactivating expired parties:', err);
+  }
 };

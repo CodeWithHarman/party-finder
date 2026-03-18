@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchActiveParties } from '../firebase/firestore';
+import { fetchActiveParties, autoDeactivateExpiredParties } from '../firebase/firestore';
 
 export const useParties = () => {
   const [parties, setParties] = useState([]);
@@ -10,6 +10,11 @@ export const useParties = () => {
     try {
       setLoading(true);
       setError(null);
+      
+      // Auto-deactivate expired parties first
+      await autoDeactivateExpiredParties();
+      
+      // Then fetch active parties
       const data = await fetchActiveParties();
       setParties(data);
     } catch (err) {

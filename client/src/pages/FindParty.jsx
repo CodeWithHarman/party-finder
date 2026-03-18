@@ -31,6 +31,12 @@ export const FindParty = () => {
     setSidebarTab('list');
   };
 
+  const handlePartyDeleted = (partyId) => {
+    // Remove the deleted party from the list and close the card
+    handleClose();
+    refetch(); // Refresh parties list
+  };
+
   return (
     <AppLayout>
       <div
@@ -147,6 +153,7 @@ export const FindParty = () => {
                 onClose={handleClose}
                 distanceKm={selectedDistance}
                 currentUserUid={user?.uid}
+                onPartyDeleted={handlePartyDeleted}
               />
             ) : (
               <PartyList
