@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { rsvpToParty, deactivateParty } from '../../firebase/firestore';
+import { rsvpToParty, deactivateParty, createRsvpNotification } from '../../firebase/firestore';
 import { formatPartyDate, timeAgo } from '../../utils/formatters';
 import { formatDistance } from '../../utils/geoUtils';
+import { useToast } from '../ui/Toast';
 
 const Tag = ({ children, color = 'accent' }) => {
   const colors = {
@@ -28,7 +29,8 @@ const Tag = ({ children, color = 'accent' }) => {
 /**
  * PartyCard - shown in the right sidebar when a party marker is clicked.
  */
-export const PartyCard = ({ party, onClose, distanceKm, currentUserUid, onPartyDeleted }) => {
+export const PartyCard = ({ party, onClose, distanceKm, currentUserUid, onPartyDeleted, currentUser }) => {
+  const addToast = useToast();
   const [rsvpDone, setRsvpDone] = useState(false);
   const [rsvpLoading, setRsvpLoading] = useState(false);
   const [rsvpCount, setRsvpCount] = useState(party.currentRSVPs || 0);
@@ -44,10 +46,13 @@ export const PartyCard = ({ party, onClose, distanceKm, currentUserUid, onPartyD
     setRsvpLoading(true);
     try {
       await rsvpToParty(party.id);
+      await createRsvpNotification(party, currentUser);
       setRsvpCount((c) => c + 1);
       setRsvpDone(true);
+      addToast('✓ You\'re going! The host has been notified.', 'success', 4000);
     } catch (err) {
       console.error(err);
+      addToast('Failed to RSVP to party', 'error', 4000);
     } finally {
       setRsvpLoading(false);
     }

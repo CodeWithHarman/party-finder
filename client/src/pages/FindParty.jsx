@@ -153,6 +153,7 @@ export const FindParty = () => {
                 onClose={handleClose}
                 distanceKm={selectedDistance}
                 currentUserUid={user?.uid}
+                currentUser={user}
                 onPartyDeleted={handlePartyDeleted}
               />
             ) : (

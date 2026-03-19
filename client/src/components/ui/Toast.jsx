@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext, useCallback } from 'react';
 
-const ToastContext = createContext(null);
+export const ToastContext = createContext(null);
 
 let toastId = 0;
 

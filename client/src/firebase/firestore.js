@@ -151,3 +151,44 @@ export const autoDeactivateExpiredParties = async () => {
     console.error('Error auto-deactivating expired parties:', err);
   }
 };
+
+/**
+ * Create a notification when someone RSVPs to a party.
+ * Stores notifications for both the RSVP user and the party host.
+ */
+export const createRsvpNotification = async (party, rsvpUser) => {
+  if (!rsvpUser) return;
+  
+  try {
+    const notificationsRef = collection(db, 'notifications');
+    const timestamp = serverTimestamp();
+    
+    // Notification for the party host
+    await addDoc(notificationsRef, {
+      type: 'rsvp',
+      recipientUid: party.hostUid,
+      senderUid: rsvpUser.uid,
+      senderName: rsvpUser.displayName,
+      senderPhoto: rsvpUser.photoURL,
+      partyId: party.id,
+      partyAddress: party.address,
+      read: false,
+      createdAt: timestamp,
+    });
+
+    // Notification for the RSVP user (confirmation)
+    await addDoc(notificationsRef, {
+      type: 'rsvp_confirmed',
+      recipientUid: rsvpUser.uid,
+      partyId: party.id,
+      partyAddress: party.address,
+      hostName: party.hostName,
+      hostPhoto: party.hostPhoto,
+      read: false,
+      createdAt: timestamp,
+    });
+  } catch (err) {
+    console.error('Error creating RSVP notification:', err);
+    // Don't throw - notification failure shouldn't break RSVP
+  }
+};
