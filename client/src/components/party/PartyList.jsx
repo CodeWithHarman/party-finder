@@ -3,7 +3,7 @@ import { haversineDistance, formatDistance } from '../../utils/geoUtils';
 
 const PartyListItem = ({ party, isSelected, onClick, userCoords }) => {
   const dist = userCoords
-    ? haversineDistance(userCoords.latitude, userCoords.longitude, party.latitude, party.longitude)
+    ? haversineDistance(userCoords.latitude, userCoords.longitude, party.lat, party.lng)
     : null;
 
   const spotsLeft = party.maxPeople - (party.currentRSVPs || 0);

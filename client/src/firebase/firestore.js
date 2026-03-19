@@ -118,28 +118,34 @@ export const deleteParty = async (partyId) => {
 
 /**
  * Auto-deactivate parties whose date has passed.
- * Call this periodically or after fetching parties.
+ * Client-side filtering to avoid needing an index.
  */
 export const autoDeactivateExpiredParties = async () => {
   try {
     const now = new Date();
-    const expiredPartiesRef = await getDocs(
+    
+    // Query only active parties (simple query, no index needed)
+    const activePartiesRef = await getDocs(
       query(
         collection(db, PARTIES_COLLECTION),
-        where('active', '==', true),
-        where('date', '<', now)
+        where('active', '==', true)
       )
     );
 
-    // Batch update expired parties to inactive
-    const batch = writeBatch(db);
-    expiredPartiesRef.docs.forEach((partyDoc) => {
-      batch.update(partyDoc.ref, { active: false });
+    // Filter expired ones client-side
+    const expiredDocs = activePartiesRef.docs.filter((partyDoc) => {
+      const partyDate = partyDoc.data().date?.toDate?.() || new Date(partyDoc.data().date);
+      return partyDate < now;
     });
 
-    if (expiredPartiesRef.docs.length > 0) {
+    // Batch update expired parties to inactive
+    if (expiredDocs.length > 0) {
+      const batch = writeBatch(db);
+      expiredDocs.forEach((partyDoc) => {
+        batch.update(partyDoc.ref, { active: false });
+      });
       await batch.commit();
-      console.log(`✓ Auto-deactivated ${expiredPartiesRef.docs.length} expired parties`);
+      console.log(`✓ Auto-deactivated ${expiredDocs.length} expired parties`);
     }
   } catch (err) {
     console.error('Error auto-deactivating expired parties:', err);
