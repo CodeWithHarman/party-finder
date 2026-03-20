@@ -8,6 +8,8 @@ import { Dashboard } from './pages/Dashboard';
 import { FindParty } from './pages/FindParty';
 import { PostParty } from './pages/PostParty';
 import './styles/globals.css';
+import './styles/responsive.css';
+import './styles/breakpoints.css';
 
 function App() {
   return (

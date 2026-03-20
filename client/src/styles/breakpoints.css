@@ -1,0 +1,114 @@
+/* Mobile-First Responsive Breakpoints and Media Queries */
+
+/* ── Breakpoint Definitions ─────────────────────────────────
+   Mobile First Approach: Base styles for mobile (< 600px)
+   Then enhance for tablet (600px - 1024px)
+   Then enhance for desktop (> 1024px)
+   ──────────────────────────────────────────────────────────── */
+
+/* ══ Extra Small Devices (< 360px) ══════════════════════════ */
+@media (max-width: 359px) {
+  body { font-size: 12px; }
+  h1 { font-size: 18px !important; }
+  h2 { font-size: 16px !important; }
+  button, a { min-height: 40px; }
+  input, select, textarea { min-height: 40px; }
+}
+
+/* ══ Small Devices (360px - 599px) ═════════════════════════ */
+@media (min-width: 360px) and (max-width: 599px) {
+  body { font-size: 13px; }
+  h1 { font-size: 20px !important; }
+  h2 { font-size: 18px !important; }
+}
+
+/* ══ Mobile Devices (600px - 767px) ════════════════════════ */
+@media (min-width: 600px) and (max-width: 767px) {
+  body { font-size: 14px; }
+  h1 { font-size: 24px !important; }
+  h2 { font-size: 20px !important; }
+}
+
+/* ══ Tablets (768px - 1023px) ═══════════════════════════════ */
+@media (min-width: 768px) {
+  body { font-size: 15px; }
+  h1 { font-size: 32px !important; }
+  h2 { font-size: 24px !important; }
+}
+
+/* ══ Small Desktop (1024px - 1279px) ═════════════════════════ */
+@media (min-width: 1024px) {
+  body { font-size: 15px; }
+}
+
+/* ══ Large Desktop (>= 1280px) ════════════════════════════════ */
+@media (min-width: 1280px) {
+  body { font-size: 16px; }
+}
+
+/* ── Touch Device Optimizations ─────────────────────────────*/
+@media (hover: none) and (pointer: coarse) {
+  button, a, input[type="button"], input[type="submit"] {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* ── Landscape Orientation ─────────────────────────────────*/
+@media (orientation: landscape) and (max-height: 500px) {
+  .hide-on-landscape {
+    display: none !important;
+  }
+  body {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+}
+
+/* ── Portrait Orientation ──────────────────────────────────*/
+@media (orientation: portrait) {
+  .hide-on-portrait {
+    display: none !important;
+  }
+}
+
+/* ── High DPI Screens (Retina) ─────────────────────────────*/
+@media (-webkit-min-device-pixel-ratio: 2),
+       (min-resolution: 192dpi) {
+  /* Optimize for high DPI displays if needed */
+}
+
+/* ── Low Width Optimization (< 320px) ──────────────────────*/
+@media (max-width: 319px) {
+  * {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  button, input {
+    max-width: 100%;
+  }
+}
+
+/* ── Dark Mode Support ─────────────────────────────────────*/
+@media (prefers-color-scheme: dark) {
+  /* Already handled by design tokens, but can add additional dark mode specific styles here */
+}
+
+/* ── Reduced Motion Support ────────────────────────────────*/
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ── Print Styles ──────────────────────────────────────────*/
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  button, input, select {
+    display: none;
+  }
+}

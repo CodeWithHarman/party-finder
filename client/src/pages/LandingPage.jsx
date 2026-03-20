@@ -32,38 +32,40 @@ export const LandingPage = () => {
       background: '#ffffff',
       position: 'relative',
       overflow: 'hidden',
+      padding: '12px',
     }}>
       <div style={{
         textAlign: 'center',
-        padding: '60px 48px',
+        padding: '32px 20px',
         maxWidth: '480px',
-        width: '90%',
+        width: '100%',
         background: 'rgba(255, 255, 255, 0.9)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
         border: '1px solid rgba(0, 0, 0, 0.1)',
-        borderRadius: '28px',
+        borderRadius: '20px',
         boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
       }}>
         {/* Logo */}
         <div style={{
-          width: '72px',
-          height: '72px',
+          width: '64px',
+          height: '64px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '42px',
-          margin: '0 auto 24px',
+          fontSize: '36px',
+          margin: '0 auto 16px',
         }}>
           🎉
         </div>
 
         <h1 style={{
-          fontSize: '40px',
+          fontSize: '32px',
           fontWeight: '800',
-          margin: '0 0 12px 0',
+          margin: '0 0 8px 0',
           color: '#000000',
           fontFamily: 'Syne, sans-serif',
+          lineHeight: '1.1',
         }}>
           Party<span style={{
             background: 'linear-gradient(135deg, #00e5c8, #9b6dff)',
@@ -75,8 +77,8 @@ export const LandingPage = () => {
 
         <p style={{
           color: '#666666',
-          fontSize: '16px',
-          margin: '0 0 40px 0',
+          fontSize: '14px',
+          margin: '0 0 28px 0',
           lineHeight: '1.6',
           fontWeight: '300',
         }}>
@@ -88,19 +90,21 @@ export const LandingPage = () => {
         <div style={{
           display: 'flex',
           flexWrap: 'wrap',
-          gap: '8px',
+          gap: '6px',
           justifyContent: 'center',
-          marginBottom: '40px',
+          marginBottom: '32px',
         }}>
           {['📍 Near your campus', '🗺️ Map view', '🎟️ RSVP instantly', '🚗 Parking info'].map((f) => (
             <span key={f} style={{
-              padding: '6px 14px',
+              padding: '5px 12px',
               background: '#f5f5f5',
               border: '1px solid #e0e0e0',
               borderRadius: '9999px',
-              fontSize: '12px',
+              fontSize: '11px',
               color: '#666666',
               fontWeight: '500',
+              whiteSpace: 'nowrap',
+              display: 'inline-block',
             }}>
               {f}
             </span>
@@ -116,18 +120,25 @@ export const LandingPage = () => {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '12px',
-              padding: '16px 32px',
+              padding: '12px 24px',
               background: 'white',
               color: '#333',
               border: 'none',
               borderRadius: '12px',
-              fontSize: '16px',
+              fontSize: '14px',
               fontWeight: '500',
               cursor: loading ? 'not-allowed' : 'pointer',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
               transition: 'all 0.2s ease',
-              minWidth: '220px',
+              minWidth: '180px',
+              width: '100%',
+              maxWidth: '280px',
               opacity: loading ? 0.7 : 1,
+              '@media (max-width: 600px)': {
+                padding: '10px 16px',
+                fontSize: '13px',
+                minWidth: '140px',
+              },
             }}
             onMouseEnter={(e) => {
               if (!loading) {

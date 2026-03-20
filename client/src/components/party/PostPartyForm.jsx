@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { postParty } from '../../firebase/firestore';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../ui/Toast';
 import { AddressSearch } from './AddressSearch';
 
 // ── Validation schema ─────────────────────────────────────────
@@ -324,10 +325,12 @@ const MapPreview = ({ coords }) => {
 // ── Main Form ─────────────────────────────────────────────────
 export const PostPartyForm = ({ onSuccess }) => {
   const { user } = useAuth();
+  const toast = useToast();
   const [geocodedCoords, setGeocodedCoords] = useState(null);
   const [geocodeRequired, setGeocodeRequired] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(null);
 
   const {
     register,
@@ -347,8 +350,14 @@ export const PostPartyForm = ({ onSuccess }) => {
   const minDate = new Date(Date.now() + 30 * 60 * 1000).toISOString().slice(0, 16);
 
   const onSubmit = async (data) => {
-    if (!geocodedCoords) { setGeocodeRequired(true); return; }
+    if (!geocodedCoords) { 
+      setGeocodeRequired(true); 
+      setError('Please verify your address on the map first');
+      toast('Please verify your address on the map', 'error');
+      return; 
+    }
     setGeocodeRequired(false);
+    setError(null);
     setSubmitting(true);
     try {
       const partyId = await postParty(
@@ -358,7 +367,10 @@ export const PostPartyForm = ({ onSuccess }) => {
       setSubmitted(true);
       onSuccess(partyId);
     } catch (err) {
+      const errorMsg = err.message || 'Failed to post party. Please try again.';
       console.error('Failed to post party:', err);
+      setError(errorMsg);
+      toast(errorMsg, 'error');
     } finally {
       setSubmitting(false);
     }
@@ -433,6 +445,25 @@ export const PostPartyForm = ({ onSuccess }) => {
         {/* Form body */}
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div style={{ padding: '24px 28px', display: 'flex', flexDirection: 'column', gap: '22px' }}>
+
+            {/* Error Alert */}
+            {error && (
+              <div style={{
+                padding: '12px 16px',
+                background: tokens.coral + '15',
+                border: `1px solid ${tokens.coral}`,
+                borderRadius: tokens.radiusSm,
+                color: tokens.coral,
+                fontSize: '13px',
+                fontFamily: "'DM Sans', sans-serif",
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}>
+                <span>⚠️</span>
+                <span>{error}</span>
+              </div>
+            )}
 
             {/* ── Location ── */}
             <SectionDivider label="Where & When" />

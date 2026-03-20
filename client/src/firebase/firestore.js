@@ -35,9 +35,13 @@ export const postParty = async (partyData, user) => {
     address: partyData.address,
     message: partyData.message,
     maxPeople: Number(partyData.maxPeople),
-    currentRSVPs: 0,
+    currentRsvps: 0,
     parking: partyData.parking,
     byob: partyData.byob,
+    // Save coordinates as separate fields for compatibility with backend
+    lat: Number(partyData.lat),
+    lng: Number(partyData.lng),
+    // Also save as GeoPoint for spatial queries
     location: new GeoPoint(Number(partyData.lat), Number(partyData.lng)),
     date: partyData.date,
     active: true,
@@ -58,13 +62,22 @@ export const fetchActiveParties = async () => {
   const snapshot = await getDocs(q);
   return snapshot.docs.map((d) => {
     const data = d.data();
-    const location = data.location || {};
+    // Use separate lat/lng fields if available (new format), otherwise extract from GeoPoint
+    let lat = data.lat;
+    let lng = data.lng;
+    
+    if (!lat || !lng) {
+      // Fall back to extracting from GeoPoint
+      const location = data.location || {};
+      lat = location.latitude !== undefined ? location.latitude : location._lat;
+      lng = location.longitude !== undefined ? location.longitude : location._lng;
+    }
+    
     return {
       id: d.id,
       ...data,
-      // Extract lat/lng from GeoPoint safely
-      lat: location.latitude !== undefined ? location.latitude : location._lat,
-      lng: location.longitude !== undefined ? location.longitude : location._lng,
+      lat,
+      lng,
     };
   });
 };
@@ -80,12 +93,22 @@ export const fetchUserParties = async (uid) => {
   const snapshot = await getDocs(q);
   return snapshot.docs.map((d) => {
     const data = d.data();
-    const location = data.location || {};
+    // Use separate lat/lng fields if available (new format), otherwise extract from GeoPoint
+    let lat = data.lat;
+    let lng = data.lng;
+    
+    if (!lat || !lng) {
+      // Fall back to extracting from GeoPoint
+      const location = data.location || {};
+      lat = location.latitude !== undefined ? location.latitude : location._lng;
+      lng = location.longitude !== undefined ? location.longitude : location._lng;
+    }
+    
     return {
       id: d.id,
       ...data,
-      lat: location.latitude !== undefined ? location.latitude : location._lat,
-      lng: location.longitude !== undefined ? location.longitude : location._lng,
+      lat,
+      lng,
     };
   });
 };
