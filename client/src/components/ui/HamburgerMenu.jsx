@@ -6,8 +6,8 @@ export const HamburgerMenu = ({ isOpen, onClick }) => {
       onClick={onClick}
       style={{
         position: 'fixed',
-        top: 'max(16px, env(safe-area-inset-top, 0px))',
-        left: 'max(16px, env(safe-area-inset-left, 0px))',
+        top: '16px',
+        left: '16px',
         zIndex: 10000,
         width: '44px',
         height: '44px',

@@ -10,14 +10,36 @@ import { useGeolocation } from '../hooks/useGeolocation';
 import { useParties } from '../hooks/useParties';
 import { useAuth } from '../hooks/useAuth';
 
-// Better mobile detection
+// Enhanced mobile detection with multiple fallbacks
 const getIsMobile = () => {
-  // Check multiple factors for reliable mobile detection
   if (typeof window === 'undefined') return false;
   
-  // Primary check: viewport width
-  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-  return vw < 1024;
+  // Get all available width measurements
+  const clientWidth = document.documentElement.clientWidth || 0;
+  const innerWidth = window.innerWidth || 0;
+  const screenWidth = window.screen?.width || 0;
+  
+  // Use the most accurate measurement
+  let vw = Math.max(clientWidth, innerWidth);
+  if (screenWidth > 0 && screenWidth < vw) {
+    vw = screenWidth;
+  }
+  
+  // Check for touch capability as strong indicator
+  const isTouch = () => {
+    return (
+      'ontouchstart' in window ||
+      'onpointerdown' in window ||
+      navigator.maxTouchPoints > 0 ||
+      navigator.msMaxTouchPoints > 0
+    );
+  };
+  
+  // Mobile if viewport < 1024px OR has touch AND viewport < 1200px
+  const isMobileSize = vw < 1024;
+  const hasTouchScreen = isTouch();
+  
+  return isMobileSize || (hasTouchScreen && vw < 1200);
 };
 
 export const FindParty = () => {

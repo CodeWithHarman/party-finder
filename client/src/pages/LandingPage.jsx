@@ -32,7 +32,7 @@ export const LandingPage = () => {
       background: '#ffffff',
       position: 'relative',
       overflow: 'hidden',
-      padding: '12px',
+      padding: '0',
     }}>
       <div style={{
         textAlign: 'center',
